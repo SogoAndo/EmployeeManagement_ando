@@ -1,0 +1,47 @@
+@model EmployeeManagement.Web.ViewModels.EmployeeDeleteViewModel
+
+@{
+    ViewData["Title"] = "社員削除確認";
+    var canDelete = string.IsNullOrWhiteSpace(Model.ErrorMessage);
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">社員削除確認</h1>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">一覧へ戻る</a>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        この社員を削除します。削除後は元に戻せません。
+    </div>
+}
+
+<section class="mb-4">
+    <h2 class="h5 border-bottom pb-2 mb-3">削除対象</h2>
+    <dl class="row mb-0">
+        <dt class="col-sm-3 col-lg-2">社員番号</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.EmployeeNo</dd>
+        <dt class="col-sm-3 col-lg-2">社員名</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.Name</dd>
+        <dt class="col-sm-3 col-lg-2">部門</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.DepartmentName</dd>
+    </dl>
+</section>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <div class="d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index">キャンセル</a>
+        <button type="submit" class="btn btn-danger" disabled="@(!canDelete)">削除する</button>
+    </div>
+</form>

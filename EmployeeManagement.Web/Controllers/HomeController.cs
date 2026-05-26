@@ -6,13 +6,15 @@ namespace EmployeeManagement.Web.Controllers;
 
 public class HomeController : Controller
 {
+    private const string SessionLoginUserId = "LoginUserId";
+
     public IActionResult Index()
     {
-        return View();
-    }
+        if (HttpContext.Session.GetInt32(SessionLoginUserId) == null)
+        {
+            return RedirectToAction("Index", "Login");
+        }
 
-    public IActionResult Privacy()
-    {
         return View();
     }
 

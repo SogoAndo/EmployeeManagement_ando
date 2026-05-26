@@ -21,6 +21,15 @@ body {
   margin-bottom: 60px;
 }
 
+.validation-summary-valid {
+  display: none;
+}
+
+.department-form dl dd,
+.employee-form dl dd {
+  min-height: 1.5rem;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;

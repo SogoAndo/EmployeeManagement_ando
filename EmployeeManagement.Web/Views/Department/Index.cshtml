@@ -1,0 +1,72 @@
+@model EmployeeManagement.Web.ViewModels.DepartmentIndexViewModel
+
+@{
+    ViewData["Title"] = "部門一覧";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">部門一覧</h1>
+        <p class="text-muted mb-0">部門情報の検索、登録、編集、削除を行います。</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">部門登録</a>
+</div>
+
+<section class="mb-4">
+    <form asp-action="Index" method="get" class="row g-3 align-items-end">
+        <div class="col-md-5 col-lg-4">
+            <label asp-for="Name" class="form-label">部門名</label>
+            <input asp-for="Name" class="form-control" placeholder="部門名を入力" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">検索</button>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-outline-secondary" asp-action="Index">クリア</a>
+        </div>
+    </form>
+</section>
+
+<section>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle bg-white">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" class="text-nowrap">ID</th>
+                    <th scope="col">部門名</th>
+                    <th scope="col" class="text-nowrap">所属社員数</th>
+                    <th scope="col">更新者</th>
+                    <th scope="col" class="text-nowrap">更新日</th>
+                    <th scope="col" class="text-nowrap">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Departments.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">該当する部門はありません。</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var department in Model.Departments)
+                    {
+                        <tr>
+                            <td class="text-nowrap">@department.Id</td>
+                            <td>@department.Name</td>
+                            <td class="text-nowrap">@department.EmployeeCount 名</td>
+                            <td>@department.UpdatedByName</td>
+                            <td class="text-nowrap">@department.UpdatedAtText</td>
+                            <td class="text-nowrap">
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@department.Id">編集</a>
+                                    <a class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@department.Id">削除</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

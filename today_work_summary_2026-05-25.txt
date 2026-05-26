@@ -1,0 +1,375 @@
+2026年5月25日 作業まとめ
+対象: 社員情報管理システム EmployeeManagement.Web
+
+1. 今日の主な到達点
+
+本日は、社員情報管理システムについて、画面・DB接続・ログイン・部門機能・社員機能・バリデーション・テストまで進めました。
+
+現在は、以下の機能が動作する状態です。
+
+- ログイン
+- ログアウト
+- 未ログイン時のログイン画面表示
+- ホーム画面
+- 部門一覧
+- 部門登録
+- 部門編集
+- 部門削除確認
+- 社員一覧
+- 社員詳細
+- 社員登録
+- 社員編集
+- 社員削除確認
+- バリデーションチェック
+- Service層の自動テスト
+
+
+2. ログイン関連
+
+ログイン機能を実装しました。
+
+現在のログインIDは数字に変更済みです。
+
+ログイン可能:
+
+- 1001 / pass1
+- 1002 / pass2
+
+ログイン不可:
+
+- 2001 / pass3
+
+2001 / pass3 がログインできない理由は、営業部所属のユーザーだからです。
+現在の仕様では、人事部所属者だけがログインできます。
+
+ログイン成功時には、Sessionに以下の情報を保存します。
+
+- LoginUserId
+- LoginId
+- EmployeeName
+
+
+3. 未ログイン時の画面遷移
+
+以前は、未ログイン状態でトップページにアクセスすると、
+
+「ホーム」
+「ログインしてください。」
+
+という画面が表示されていました。
+
+現在はこの中継画面を出さず、未ログインで / にアクセスした場合は、直接ログイン画面に移動するように変更しました。
+
+処理:
+
+- 未ログインで / にアクセス
+- /Login/Index にリダイレクト
+
+
+4. DB関連
+
+PostgreSQLの employee_management データベースを使用しています。
+
+接続文字列は appsettings.json に設定しています。
+
+現在使用している主なテーブルは以下です。
+
+- departments
+- employees
+- users
+
+login_id は users テーブルに保存されています。
+
+pgAdmin 4で確認する場合は、以下の順に開きます。
+
+Servers
+  -> WSL-PostgreSQL18
+  -> Databases
+  -> employee_management
+  -> Schemas
+  -> public
+  -> Tables
+
+その後、対象テーブルを右クリックして View/Edit Data -> All Rows を選ぶと確認できます。
+
+
+5. DBの日時エラー修正
+
+登録時に以下のエラーが出ていました。
+
+An error occurred while saving the entity changes. See the inner exception for details.
+
+原因は、C#側の DateTime と PostgreSQL側の timestamp without time zone の扱いが合っていなかったことです。
+
+対応として、AppDbContext.cs で以下の型を明示しました。
+
+- employees.hire_date -> date
+- employees.created_at -> timestamp without time zone
+- employees.updated_at -> timestamp without time zone
+- departments.created_at -> timestamp without time zone
+- departments.updated_at -> timestamp without time zone
+
+これにより、社員登録・部門登録が正常に保存できるようになりました。
+
+
+6. 部門機能
+
+部門機能として以下を実装しました。
+
+- 部門一覧
+- 部門登録
+- 部門編集
+- 部門削除確認
+
+部門一覧では、部門名検索ができます。
+
+部門登録では、部門名を入力して登録できます。
+
+部門編集では、部門名を変更できます。
+
+部門削除では、削除確認画面を表示してから削除します。
+
+ただし、以下の部門は削除できません。
+
+- 所属社員がいる部門
+- 人事部
+
+人事部を削除できないようにした理由は、人事部がログイン判定に使用されているためです。
+人事部を削除すると、ログインできるユーザーがいなくなる可能性があります。
+
+
+7. 人事部削除トラブルの復旧
+
+途中で人事部がなくなり、ログインできなくなる問題が発生しました。
+
+DBを確認したところ、admin相当のユーザーが人事部ではなく別部門に紐づいていたため、ログイン判定で拒否されていました。
+
+対応:
+
+- 部門ID 1 を人事部に復旧
+- 人事部の削除を禁止
+- 人事部の部門名変更を禁止
+
+これにより、1001 / pass1 と 1002 / pass2 でログインできる状態に戻しました。
+
+
+8. 社員機能
+
+社員機能として以下を実装しました。
+
+- 社員一覧
+- 社員詳細
+- 社員登録
+- 社員編集
+- 社員削除確認
+
+社員一覧では、以下の条件で検索できます。
+
+- 社員番号
+- 社員名
+- 部門
+
+社員登録・編集では、以下の項目を扱います。
+
+- 社員番号
+- 社員名
+- 部門
+- メールアドレス
+- 入社日
+
+ログインユーザーに紐づいている社員は削除できないようにしています。
+
+
+9. バリデーションチェック
+
+画面入力用のViewModelと、保存前のServiceの両方でバリデーションを実装しました。
+
+ログインID:
+
+- 必須
+- 50文字以内
+- 4桁の数字のみ
+
+パスワード:
+
+- 必須
+- 255文字以内
+
+部門名:
+
+- 必須
+- 50文字以内
+- 空白だけは禁止
+
+社員番号:
+
+- 必須
+- 10文字以内
+- 半角英数字のみ
+- 重複不可
+
+社員名:
+
+- 必須
+- 50文字以内
+- 空白だけは禁止
+
+メールアドレス:
+
+- 任意入力
+- 入力された場合は100文字以内
+- example@example.com のような形式のみ許可
+
+入社日:
+
+- 必須
+
+部門:
+
+- 必須
+- 存在する部門のみ許可
+
+
+10. メールアドレスチェック
+
+メールアドレスのチェックを強化しました。
+
+許可される例:
+
+- test@example.com
+- employee1@example.co.jp
+
+許可されない例:
+
+- mail
+- test@sample
+- @example.com
+
+画面側では input type="email" を指定しました。
+Service側でも同じ形式チェックを行うため、画面以外から登録処理が呼ばれても不正なメールアドレスは保存されません。
+
+
+11. テスト追加
+
+MSTestでService層のテストを追加しました。
+
+削除したファイル:
+
+- EmployeeManagement.Test/Test1.cs
+
+追加したファイル:
+
+- EmployeeManagement.Test/ServiceValidationTests.cs
+
+追加したテスト内容:
+
+- 人事部ユーザーはログイン可能
+- 営業部ユーザーはログイン不可
+- 人事部は改名できない
+- 人事部は削除できない
+- 所属社員がいる部門は削除できない
+- 不正なメールアドレスでは社員登録できない
+- メールアドレス空欄は社員登録可能
+- ViewModel側のメール形式チェック
+- ログインIDは4桁数字のみ
+
+テスト結果:
+
+- Passed: 9
+- Failed: 0
+
+
+12. 動作確認で使用したコマンド
+
+ビルド:
+
+dotnet build EmployeeManagement.slnx
+
+テスト:
+
+dotnet test EmployeeManagement.slnx
+
+実行確認用URL:
+
+http://localhost:5097
+
+
+13. 現在のログイン情報
+
+人事部ユーザー:
+
+- 1001 / pass1
+- 1002 / pass2
+
+営業部ユーザー:
+
+- 2001 / pass3
+
+営業部ユーザーはDB上には存在しますが、ログイン不可です。
+
+
+14. 主な変更ファイル
+
+ログイン:
+
+- EmployeeManagement.Web/Controllers/LoginController.cs
+- EmployeeManagement.Web/Views/Login/Index.cshtml
+- EmployeeManagement.Web/ViewModels/LoginViewModel.cs
+- EmployeeManagement.Web/Applications/Services/Impls/LoginService.cs
+- EmployeeManagement.Web/Applications/Services/Impls/LoginAuthorizationService.cs
+
+ホーム:
+
+- EmployeeManagement.Web/Controllers/HomeController.cs
+- EmployeeManagement.Web/Views/Home/Index.cshtml
+
+部門:
+
+- EmployeeManagement.Web/Controllers/DepartmentController.cs
+- EmployeeManagement.Web/Views/Department/Index.cshtml
+- EmployeeManagement.Web/Views/Department/Create.cshtml
+- EmployeeManagement.Web/Views/Department/Edit.cshtml
+- EmployeeManagement.Web/Views/Department/Delete.cshtml
+- EmployeeManagement.Web/ViewModels/DepartmentIndexViewModel.cs
+- EmployeeManagement.Web/ViewModels/DepartmentFormViewModel.cs
+- EmployeeManagement.Web/ViewModels/DepartmentDeleteViewModel.cs
+- EmployeeManagement.Web/Applications/Services/Impls/DepartmentService.cs
+- EmployeeManagement.Web/Infrastructures/Repositories/DepartmentRepository.cs
+
+社員:
+
+- EmployeeManagement.Web/Controllers/EmployeeController.cs
+- EmployeeManagement.Web/Views/Employee/Index.cshtml
+- EmployeeManagement.Web/Views/Employee/Details.cshtml
+- EmployeeManagement.Web/Views/Employee/Create.cshtml
+- EmployeeManagement.Web/Views/Employee/Edit.cshtml
+- EmployeeManagement.Web/Views/Employee/Delete.cshtml
+- EmployeeManagement.Web/ViewModels/EmployeeIndexViewModel.cs
+- EmployeeManagement.Web/ViewModels/EmployeeFormViewModel.cs
+- EmployeeManagement.Web/ViewModels/EmployeeDetailViewModel.cs
+- EmployeeManagement.Web/ViewModels/EmployeeDeleteViewModel.cs
+- EmployeeManagement.Web/Applications/Services/Impls/EmployeeService.cs
+- EmployeeManagement.Web/Infrastructures/Repositories/EmployeeRepository.cs
+
+DB接続:
+
+- EmployeeManagement.Web/Program.cs
+- EmployeeManagement.Web/appsettings.json
+- EmployeeManagement.Web/Infrastructures/Context/AppDbContext.cs
+
+テスト:
+
+- EmployeeManagement.Test/ServiceValidationTests.cs
+
+
+15. 次に進める候補
+
+次に進める候補は以下です。
+
+- Controllerテストを追加する
+- Repositoryテストを追加する
+- 画面設計ver.2.pptxに合わせて見た目を調整する
+- 入力エラー画面の見た目を整える
+- 仕様書を最新状態に更新する
+- GitHub提出用に成果物整理を行う
+

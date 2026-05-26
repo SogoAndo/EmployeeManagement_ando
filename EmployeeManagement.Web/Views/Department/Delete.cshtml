@@ -1,0 +1,59 @@
+@model EmployeeManagement.Web.ViewModels.DepartmentDeleteViewModel
+
+@{
+    ViewData["Title"] = "部門削除確認";
+    var canDelete = string.IsNullOrWhiteSpace(Model.ErrorMessage) && Model.EmployeeCount == 0;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">部門削除確認</h1>
+        <p class="text-muted mb-0">削除対象の部門情報を確認してください。</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">一覧へ戻る</a>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+        所属社員の部門を変更してから削除してください。
+    </div>
+}
+else if (Model.EmployeeCount > 0)
+{
+    <div class="alert alert-warning" role="alert">
+        所属社員がいる部門は削除できません。所属社員の部門を変更してから削除してください。
+    </div>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        この部門を削除します。削除後は元に戻せません。
+    </div>
+}
+
+<section class="mb-4">
+    <h2 class="h5 border-bottom pb-2 mb-3">削除対象</h2>
+    <dl class="row mb-0">
+        <dt class="col-sm-3 col-lg-2">部門ID</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.Id</dd>
+        <dt class="col-sm-3 col-lg-2">部門名</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.Name</dd>
+        <dt class="col-sm-3 col-lg-2">所属社員数</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.EmployeeCount 名</dd>
+        <dt class="col-sm-3 col-lg-2">更新者</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.UpdatedByName</dd>
+        <dt class="col-sm-3 col-lg-2">更新日</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.UpdatedAtText</dd>
+    </dl>
+</section>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <div class="d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index">キャンセル</a>
+        <button type="submit" class="btn btn-danger" disabled="@(!canDelete)">削除する</button>
+    </div>
+</form>

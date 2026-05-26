@@ -1,0 +1,53 @@
+@model EmployeeManagement.Web.ViewModels.DepartmentFormViewModel
+
+@{
+    ViewData["Title"] = "部門編集";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">部門編集</h1>
+        <p class="text-muted mb-0">部門情報を変更します。</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">一覧へ戻る</a>
+</div>
+
+<form asp-action="Edit" method="post" class="department-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <section class="mb-4">
+        <h2 class="h5 border-bottom pb-2 mb-3">基本情報</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 border-bottom pb-2 mb-3">確認情報</h2>
+        <dl class="row mb-0">
+            <dt class="col-sm-3 col-lg-2">登録者</dt>
+            <dd class="col-sm-9 col-lg-10">@Model.CreatedByName</dd>
+            <dt class="col-sm-3 col-lg-2">登録日時</dt>
+            <dd class="col-sm-9 col-lg-10">@Model.CreatedAtText</dd>
+            <dt class="col-sm-3 col-lg-2">更新者</dt>
+            <dd class="col-sm-9 col-lg-10">@Model.UpdatedByName</dd>
+            <dt class="col-sm-3 col-lg-2">更新日時</dt>
+            <dd class="col-sm-9 col-lg-10">@Model.UpdatedAtText</dd>
+        </dl>
+    </section>
+
+    <div class="d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index">キャンセル</a>
+        <button type="submit" class="btn btn-primary">更新する</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
