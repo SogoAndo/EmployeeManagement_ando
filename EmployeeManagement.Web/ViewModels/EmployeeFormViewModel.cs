@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EmployeeManagement.Web.ViewModels;
@@ -20,6 +21,11 @@ public class EmployeeFormViewModel
     [Required(ErrorMessage = "{0}を入力してください。")]
     [StringLength(10, ErrorMessage = "{0}は{1}文字以内で入力してください。")]
     [RegularExpression(@"^[A-Za-z0-9]+$", ErrorMessage = "{0}は半角英数字で入力してください。")]
+    [Remote(
+        action: "IsEmployeeNoAvailable",
+        controller: "Employee",
+        AdditionalFields = nameof(Id),
+        ErrorMessage = "この社員番号は既に使用されています。")]
     public string EmployeeNo { get; set; } = string.Empty;
 
     /// <summary>
@@ -60,6 +66,26 @@ public class EmployeeFormViewModel
     /// 部門選択肢
     /// </summary>
     public List<SelectListItem> DepartmentOptions { get; set; } = new();
+
+    /// <summary>
+    /// 保存後またはキャンセル時に戻るURL
+    /// </summary>
+    public string? ReturnUrl { get; set; }
+
+    /// <summary>
+    /// 削除後に戻るURL
+    /// </summary>
+    public string? DeleteReturnUrl { get; set; }
+
+    /// <summary>
+    /// ログインユーザーが登録済みかどうか
+    /// </summary>
+    public bool HasLoginUser { get; set; }
+
+    /// <summary>
+    /// ログイン情報の登録・更新画面へ移動できるかどうか
+    /// </summary>
+    public bool CanManageLoginUser { get; set; }
 
     /// <summary>
     /// 登録者名

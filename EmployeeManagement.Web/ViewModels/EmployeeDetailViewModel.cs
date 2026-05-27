@@ -31,9 +31,24 @@ public class EmployeeDetailViewModel
     public string HireDateText { get; set; } = string.Empty;
 
     /// <summary>
+    /// 部門ID
+    /// </summary>
+    public int DepartmentId { get; set; }
+
+    /// <summary>
     /// 部門名
     /// </summary>
     public string DepartmentName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// ログイン情報の登録・更新画面へ移動できるかどうか
+    /// </summary>
+    public bool CanManageLoginUser { get; set; }
+
+    /// <summary>
+    /// ログインユーザーが登録済みかどうか
+    /// </summary>
+    public bool HasLoginUser { get; set; }
 
     /// <summary>
     /// 登録者名
@@ -54,4 +69,14 @@ public class EmployeeDetailViewModel
     /// 更新日時
     /// </summary>
     public string UpdatedAtText { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 一覧へ戻るURL
+    /// </summary>
+    public string? ReturnUrl { get; set; }
+
+    /// <summary>
+    /// 現在の社員詳細URL
+    /// </summary>
+    public string CurrentUrl { get; set; } = string.Empty;
 }

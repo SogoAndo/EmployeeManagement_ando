@@ -1,11 +1,11 @@
 ﻿@{
     ViewData["Title"] = "ホーム";
-    var employeeName = Context.Session.GetString("EmployeeName");
+    var userName = Context.Session.GetString(SessionKeys.UserName);
 }
 
 <div class="mb-4">
     <h1 class="h3">ホーム</h1>
-    <p class="text-muted">@employeeName さんでログイン中です。</p>
+    <p class="text-muted">@userName さんでログイン中です。</p>
     <div class="row g-3 mt-2">
         <div class="col-md-6 col-lg-4">
             <div class="card h-100">

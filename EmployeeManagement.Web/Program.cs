@@ -30,6 +30,7 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ILoginAuthorizationService, LoginAuthorizationService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddSingleton<IPasswordHashService, IdentityPasswordHashService>();
 
 var app = builder.Build();
 

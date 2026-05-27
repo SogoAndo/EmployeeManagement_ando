@@ -25,8 +25,54 @@ body {
   display: none;
 }
 
+.field-label-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.field-requirement {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.25rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.field-required {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f1aeb5;
+}
+
+.field-optional {
+  color: #495057;
+  background-color: #f8f9fa;
+  border-color: #ced4da;
+}
+
+.password-field::-ms-reveal,
+.password-field::-ms-clear {
+  display: none;
+}
+
+.password-toggle {
+  min-width: 2.75rem;
+}
+
+.password-toggle svg {
+  pointer-events: none;
+}
+
 .department-form dl dd,
-.employee-form dl dd {
+.employee-form dl dd,
+.login-user-form dl dd {
   min-height: 1.5rem;
 }
 

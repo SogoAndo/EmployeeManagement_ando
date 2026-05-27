@@ -14,4 +14,9 @@ public class DepartmentIndexViewModel
     /// 部門一覧
     /// </summary>
     public List<DepartmentListItemViewModel> Departments { get; set; } = new();
+
+    /// <summary>
+    /// 現在の一覧URL
+    /// </summary>
+    public string ReturnUrl { get; set; } = string.Empty;
 }

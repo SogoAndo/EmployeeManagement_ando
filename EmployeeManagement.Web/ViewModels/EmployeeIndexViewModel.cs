@@ -23,6 +23,11 @@ public class EmployeeIndexViewModel
     public int? DepartmentId { get; set; }
 
     /// <summary>
+    /// 検索条件: 部門名
+    /// </summary>
+    public string? SelectedDepartmentName { get; set; }
+
+    /// <summary>
     /// 部門選択肢
     /// </summary>
     public List<SelectListItem> DepartmentOptions { get; set; } = new();
@@ -31,4 +36,14 @@ public class EmployeeIndexViewModel
     /// 社員一覧
     /// </summary>
     public List<EmployeeListItemViewModel> Employees { get; set; } = new();
+
+    /// <summary>
+    /// 現在の一覧URL
+    /// </summary>
+    public string ReturnUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 呼び出し元へ戻るURL
+    /// </summary>
+    public string? BackUrl { get; set; }
 }

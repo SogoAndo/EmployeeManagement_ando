@@ -2,44 +2,62 @@
 
 @{
     ViewData["Title"] = "社員登録";
+    var backUrl = string.IsNullOrWhiteSpace(Model.ReturnUrl) ? Url.Action("Index") : Model.ReturnUrl;
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
         <h1 class="h3 mb-1">社員登録</h1>
     </div>
-    <a class="btn btn-outline-secondary" asp-action="Index">一覧へ戻る</a>
+    <a class="btn btn-outline-secondary" href="@backUrl">一覧へ戻る</a>
 </div>
 
 <form asp-action="Create" method="post" class="employee-form">
     @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="ReturnUrl" type="hidden" />
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
     <section class="mb-4">
         <h2 class="h5 border-bottom pb-2 mb-3">基本情報</h2>
         <div class="row g-3">
             <div class="col-md-4">
-                <label asp-for="EmployeeNo" class="form-label"></label>
+                <div class="field-label-line">
+                    <label asp-for="EmployeeNo" class="form-label mb-0"></label>
+                    <span class="field-requirement field-required">必須</span>
+                </div>
                 <input asp-for="EmployeeNo" class="form-control" />
                 <span asp-validation-for="EmployeeNo" class="text-danger"></span>
             </div>
             <div class="col-md-4">
-                <label asp-for="Name" class="form-label"></label>
+                <div class="field-label-line">
+                    <label asp-for="Name" class="form-label mb-0"></label>
+                    <span class="field-requirement field-required">必須</span>
+                </div>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="col-md-4">
-                <label asp-for="DepartmentId" class="form-label"></label>
+                <div class="field-label-line">
+                    <label asp-for="DepartmentId" class="form-label mb-0"></label>
+                    <span class="field-requirement field-required">必須</span>
+                </div>
                 <select asp-for="DepartmentId" asp-items="Model.DepartmentOptions" class="form-select"></select>
                 <span asp-validation-for="DepartmentId" class="text-danger"></span>
             </div>
             <div class="col-md-6">
-                <label asp-for="Email" class="form-label"></label>
+                <div class="field-label-line">
+                    <label asp-for="Email" class="form-label mb-0"></label>
+                    <span class="field-requirement field-optional">任意</span>
+                </div>
                 <input asp-for="Email" type="email" maxlength="100" autocomplete="email" class="form-control" placeholder="example@example.com" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="col-md-3">
-                <label asp-for="HireDate" class="form-label"></label>
+                <div class="field-label-line">
+                    <label asp-for="HireDate" class="form-label mb-0"></label>
+                    <span class="field-requirement field-required">必須</span>
+                </div>
                 <input asp-for="HireDate" asp-format="{0:yyyy-MM-dd}" type="date" class="form-control" />
                 <span asp-validation-for="HireDate" class="text-danger"></span>
             </div>
@@ -61,7 +79,7 @@
     </section>
 
     <div class="d-flex justify-content-end gap-2">
-        <a class="btn btn-outline-secondary" asp-action="Index">キャンセル</a>
+        <a class="btn btn-outline-secondary" href="@backUrl">キャンセル</a>
         <button type="submit" class="btn btn-primary">登録する</button>
     </div>
 </form>

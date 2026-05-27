@@ -40,4 +40,14 @@ public class DepartmentFormViewModel
     /// 更新日時
     /// </summary>
     public string UpdatedAtText { get; set; } = "更新時に設定";
+
+    /// <summary>
+    /// 保存後またはキャンセル時に戻るURL
+    /// </summary>
+    public string? ReturnUrl { get; set; }
+
+    /// <summary>
+    /// 削除後に戻るURL
+    /// </summary>
+    public string? DeleteReturnUrl { get; set; }
 }

@@ -21,6 +21,11 @@ public class EmployeeListItemViewModel
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
+    /// 部門ID
+    /// </summary>
+    public int DepartmentId { get; set; }
+
+    /// <summary>
     /// 部門名
     /// </summary>
     public string DepartmentName { get; set; } = string.Empty;

@@ -38,6 +38,11 @@ public interface ILoginUserRepository
     void Update(LoginUserEntity loginUser);
 
     /// <summary>
+    /// ログインユーザーのパスワードを更新する
+    /// </summary>
+    void UpdatePassword(int id, string password);
+
+    /// <summary>
     /// ログインユーザーを削除する
     /// </summary>
     void Delete(LoginUserEntity loginUser);

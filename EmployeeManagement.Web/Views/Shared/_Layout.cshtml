@@ -31,12 +31,12 @@
                         </li>
                     </ul>
                     @{
-                        var employeeName = Context.Session.GetString("EmployeeName");
+                        var userName = Context.Session.GetString(SessionKeys.UserName);
                     }
-                    @if (!string.IsNullOrWhiteSpace(employeeName))
+                    @if (!string.IsNullOrWhiteSpace(userName))
                     {
                         <div class="d-flex align-items-center gap-3">
-                            <span class="text-muted">@employeeName さん</span>
+                            <span class="text-muted">@userName さん</span>
                             <form asp-controller="Login" asp-action="Logout" method="post" class="m-0">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">ログアウト</button>
@@ -49,6 +49,20 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["SuccessMessage"] is string successMessage)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @successMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="閉じる"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] is string errorMessage)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="閉じる"></button>
+                </div>
+            }
             @RenderBody()
         </main>
     </div>

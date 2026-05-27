@@ -1,0 +1,34 @@
+2026-05-27 実行内容まとめ
+
+1. セッション仕様の見直し
+- 「0a_C#におけるセション.pdf」と回答例のProgram.csを確認し、ログイン状態をSessionで管理する仕様に合わせた。
+- Program.csではAddSessionとUseSessionが設定済みであることを確認した。
+- セッションキーをSessionKeys.csに集約し、UserId / LoginId / UserNameを使用する形に変更した。
+- LoginController、HomeController、EmployeeController、DepartmentController、LoginRequiredFilterのログイン判定をUserIdベースに整理した。
+- ログアウト時はSession.Clear()でセッション情報を削除する仕様を維持した。
+
+2. パスワードハッシュ方式の整理
+- 回答例に合わせて、Microsoft.AspNetCore.Identity.PasswordHasher<string>を使用するIdentityPasswordHashServiceを追加した。
+- Program.csのDI登録をIdentityPasswordHashServiceに変更した。
+- 旧ハッシュ方式であるPBKDF2関連の実装とテストを削除した。
+- IPasswordHashServiceから旧方式の再ハッシュ判定に使っていたNeedsRehashを削除した。
+- 現在はPasswordHasher<string>形式で保存されたパスワードのみを有効な形式として扱う。
+
+3. MSTestの実装・整理
+- EmployeeManagement.TestプロジェクトでMSTestを使用した自動テストを整備した。
+- MSTestSettings.csでテストをメソッド単位で並列実行する設定を追加した。
+- テスト用のFakeRepositoryとTestDataFactoryを用意し、DBに依存しない形でサービス層を検証できるようにした。
+- LoginAuthorizationServiceTestsでは、人事部所属者のみログイン可能かを検証した。
+- IdentityPasswordHashServiceTestsでは、パスワードのハッシュ化、正しいパスワードの検証、誤ったパスワードの拒否を検証した。
+- EmployeeServiceLoginUserTestsでは、人事部社員へのログイン情報登録、パスワード未入力時の維持、人事部以外への登録禁止、未登録ログイン情報削除時の例外を検証した。
+- ViewModelValidationTestsでは、ログインIDやパスワード確認など画面入力のバリデーションを検証した。
+- ServiceValidationTestsでは、社員・部門・ログイン関連の主要な業務ロジックをまとめて検証した。
+
+4. 現在の検証結果
+- dotnet testを実行し、40件すべて成功した。
+- 結果: Failed 0 / Passed 40 / Skipped 0
+- アプリケーションは http://localhost:5097/Login で起動確認済み。
+
+5. 注意事項
+- 旧PBKDF2形式や平文で保存されている既存パスワードは、現在の仕様ではログインできない。
+- 既存ユーザーを利用する場合は、PasswordHasher<string>形式でパスワードを再設定する必要がある。

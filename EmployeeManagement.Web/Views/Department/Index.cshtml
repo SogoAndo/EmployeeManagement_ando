@@ -7,9 +7,9 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
         <h1 class="h3 mb-1">部門一覧</h1>
-        <p class="text-muted mb-0">部門情報の検索、登録、編集、削除を行います。</p>
+        <p class="text-muted mb-0">部門情報の検索、登録、詳細確認、編集を行います。</p>
     </div>
-    <a class="btn btn-primary" asp-action="Create">部門登録</a>
+    <a class="btn btn-primary" asp-action="Create" asp-route-returnUrl="@Model.ReturnUrl">部門登録</a>
 </div>
 
 <section class="mb-4">
@@ -53,14 +53,18 @@
                     {
                         <tr>
                             <td class="text-nowrap">@department.Id</td>
-                            <td>@department.Name</td>
-                            <td class="text-nowrap">@department.EmployeeCount 名</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@department.Id" asp-route-returnUrl="@Model.ReturnUrl">@department.Name</a>
+                            </td>
+                            <td class="text-nowrap">
+                                <a asp-action="Details" asp-route-id="@department.Id" asp-route-returnUrl="@Model.ReturnUrl">@department.EmployeeCount 名</a>
+                            </td>
                             <td>@department.UpdatedByName</td>
                             <td class="text-nowrap">@department.UpdatedAtText</td>
                             <td class="text-nowrap">
                                 <div class="d-flex gap-2">
-                                    <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@department.Id">編集</a>
-                                    <a class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@department.Id">削除</a>
+                                    <a class="btn btn-outline-secondary btn-sm" asp-action="Details" asp-route-id="@department.Id" asp-route-returnUrl="@Model.ReturnUrl">詳細</a>
+                                    <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@department.Id" asp-route-returnUrl="@Model.ReturnUrl">編集</a>
                                 </div>
                             </td>
                         </tr>

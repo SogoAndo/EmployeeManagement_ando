@@ -78,7 +78,24 @@ public class LoginUserRepository : ILoginUserRepository
     /// </summary>
     public void Update(LoginUserEntity loginUser)
     {
-        _appDbContext.LoginUsers.Update(loginUser);
+        var current = _appDbContext.LoginUsers.FirstOrDefault(u => u.Id == loginUser.Id)
+            ?? throw new KeyNotFoundException($"指定されたログインユーザーID:{loginUser.Id}は存在しません。");
+
+        current.LoginId = loginUser.LoginId;
+        current.Password = loginUser.Password;
+        current.EmployeeId = loginUser.EmployeeId;
+        _appDbContext.SaveChanges();
+    }
+
+    /// <summary>
+    /// ログインユーザーのパスワードを更新する
+    /// </summary>
+    public void UpdatePassword(int id, string password)
+    {
+        var current = _appDbContext.LoginUsers.FirstOrDefault(u => u.Id == id)
+            ?? throw new KeyNotFoundException($"指定されたログインユーザーID:{id}は存在しません。");
+
+        current.Password = password;
         _appDbContext.SaveChanges();
     }
 
@@ -87,7 +104,13 @@ public class LoginUserRepository : ILoginUserRepository
     /// </summary>
     public void Delete(LoginUserEntity loginUser)
     {
-        _appDbContext.LoginUsers.Remove(loginUser);
+        var current = _appDbContext.LoginUsers.FirstOrDefault(u => u.Id == loginUser.Id);
+        if (current == null)
+        {
+            return;
+        }
+
+        _appDbContext.LoginUsers.Remove(current);
         _appDbContext.SaveChanges();
     }
 }

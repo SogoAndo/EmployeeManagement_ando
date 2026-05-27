@@ -1,0 +1,68 @@
+@model EmployeeManagement.Web.ViewModels.EmployeeLoginUserFormViewModel
+
+@{
+    var passwordPlaceholder = Model.HasLoginUser ? "変更時のみ入力" : string.Empty;
+}
+
+<section class="mb-4"
+         id="loginUserSection"
+         data-has-login-user="@Model.HasLoginUser.ToString().ToLowerInvariant()">
+    <h2 class="h5 border-bottom pb-2 mb-3">ログイン情報</h2>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="field-label-line">
+                <label asp-for="LoginId" class="form-label mb-0"></label>
+                <span class="field-requirement field-required">必須</span>
+            </div>
+            <input asp-for="LoginId" class="form-control" inputmode="numeric" maxlength="4" autocomplete="username" />
+            <span asp-validation-for="LoginId" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <div class="field-label-line">
+                <label asp-for="Password" class="form-label mb-0"></label>
+                <span class="field-requirement @(Model.HasLoginUser ? "field-optional" : "field-required")" data-password-requirement>
+                    @(Model.HasLoginUser ? "任意" : "必須")
+                </span>
+            </div>
+            <div class="input-group">
+                <input asp-for="Password" type="password" class="form-control password-field" autocomplete="new-password" placeholder="@passwordPlaceholder" />
+                <button class="btn btn-outline-secondary password-toggle"
+                        type="button"
+                        data-password-toggle="#Password"
+                        aria-label="パスワードを表示"
+                        aria-controls="Password"
+                        aria-pressed="false">
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <div class="field-label-line">
+                <label asp-for="ConfirmPassword" class="form-label mb-0"></label>
+                <span class="field-requirement @(Model.HasLoginUser ? "field-optional" : "field-required")" data-password-requirement>
+                    @(Model.HasLoginUser ? "任意" : "必須")
+                </span>
+            </div>
+            <div class="input-group">
+                <input asp-for="ConfirmPassword" type="password" class="form-control password-field" autocomplete="new-password" placeholder="@passwordPlaceholder" />
+                <button class="btn btn-outline-secondary password-toggle"
+                        type="button"
+                        data-password-toggle="#ConfirmPassword"
+                        aria-label="パスワード確認を表示"
+                        aria-controls="ConfirmPassword"
+                        aria-pressed="false">
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            <span id="passwordMismatchClientMessage" class="text-danger d-none">パスワードとパスワード確認が一致しません。もう一度入力してください。</span>
+        </div>
+    </div>
+</section>

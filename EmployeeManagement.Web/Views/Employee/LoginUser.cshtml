@@ -1,0 +1,51 @@
+@model EmployeeManagement.Web.ViewModels.EmployeeLoginUserFormViewModel
+
+@{
+    ViewData["Title"] = Model.HasLoginUser ? "ログイン情報編集" : "ログイン情報登録";
+    var backUrl = string.IsNullOrWhiteSpace(Model.ReturnUrl)
+        ? Url.Action("Details", new { id = Model.EmployeeId })
+        : Model.ReturnUrl;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">@ViewData["Title"]</h1>
+    </div>
+    <a class="btn btn-outline-secondary" href="@backUrl">前の画面へ戻る</a>
+</div>
+
+<section class="mb-4">
+    <h2 class="h5 border-bottom pb-2 mb-3">対象社員</h2>
+    <dl class="row mb-0">
+        <dt class="col-sm-3 col-lg-2">社員番号</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.EmployeeNo</dd>
+        <dt class="col-sm-3 col-lg-2">社員名</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.EmployeeName</dd>
+        <dt class="col-sm-3 col-lg-2">部門</dt>
+        <dd class="col-sm-9 col-lg-10">@Model.DepartmentName</dd>
+        <dt class="col-sm-3 col-lg-2">状態</dt>
+        <dd class="col-sm-9 col-lg-10">
+            <span class="badge @(Model.HasLoginUser ? "text-bg-success" : "text-bg-secondary")">
+                @(Model.HasLoginUser ? "設定済み" : "未設定")
+            </span>
+        </dd>
+    </dl>
+</section>
+
+<form asp-action="LoginUser" method="post" class="login-user-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="EmployeeId" type="hidden" />
+    <input asp-for="ReturnUrl" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    <partial name="_LoginUserFields" model="Model" />
+
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" href="@backUrl">キャンセル</a>
+        <button type="submit" class="btn btn-primary">保存する</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

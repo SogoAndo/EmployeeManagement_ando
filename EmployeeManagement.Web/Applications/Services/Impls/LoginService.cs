@@ -10,16 +10,19 @@ public class LoginService : ILoginService
 {
     private readonly ILoginUserRepository _loginUserRepository;
     private readonly ILoginAuthorizationService _loginAuthorizationService;
+    private readonly IPasswordHashService _passwordHashService;
 
     /// <summary>
     /// コンストラクタ
     /// </summary>
     public LoginService(
         ILoginUserRepository loginUserRepository,
-        ILoginAuthorizationService loginAuthorizationService)
+        ILoginAuthorizationService loginAuthorizationService,
+        IPasswordHashService passwordHashService)
     {
         _loginUserRepository = loginUserRepository;
         _loginAuthorizationService = loginAuthorizationService;
+        _passwordHashService = passwordHashService;
     }
 
     /// <summary>
@@ -38,7 +41,7 @@ public class LoginService : ILoginService
             return null;
         }
 
-        if (loginUser.Password != password)
+        if (!_passwordHashService.Verify(password, loginUser.Password))
         {
             return null;
         }

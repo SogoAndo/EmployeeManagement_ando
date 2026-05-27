@@ -1,16 +1,17 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+using EmployeeManagement.Web.Applications.Filters;
+using EmployeeManagement.Web.Applications.Security;
 using EmployeeManagement.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Web.Controllers;
 
 public class HomeController : Controller
 {
-    private const string SessionLoginUserId = "LoginUserId";
-
+    [LoginRequired]
     public IActionResult Index()
     {
-        if (HttpContext.Session.GetInt32(SessionLoginUserId) == null)
+        if (HttpContext.Session.GetInt32(SessionKeys.UserId) == null)
         {
             return RedirectToAction("Index", "Login");
         }

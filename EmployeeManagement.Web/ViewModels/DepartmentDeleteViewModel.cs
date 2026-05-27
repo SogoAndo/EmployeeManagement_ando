@@ -34,4 +34,14 @@ public class DepartmentDeleteViewModel
     /// 削除不可などのメッセージ
     /// </summary>
     public string? ErrorMessage { get; set; }
+
+    /// <summary>
+    /// 削除後またはキャンセル時に戻るURL
+    /// </summary>
+    public string? ReturnUrl { get; set; }
+
+    /// <summary>
+    /// 削除をキャンセルした時に戻るURL
+    /// </summary>
+    public string? CancelUrl { get; set; }
 }

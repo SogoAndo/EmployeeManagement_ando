@@ -1,3 +1,5 @@
+using EmployeeManagement.Web.Applications.Filters;
+using EmployeeManagement.Web.Applications.Security;
 using EmployeeManagement.Web.Applications.Services;
 using EmployeeManagement.Web.Infrastructures.Entities;
 using EmployeeManagement.Web.ViewModels;
@@ -8,9 +10,10 @@ namespace EmployeeManagement.Web.Controllers;
 /// <summary>
 /// 部門機能を扱うController
 /// </summary>
+[LoginRequired]
 public class DepartmentController : Controller
 {
-    private const string SessionLoginUserId = "LoginUserId";
+    private const string TempDataSuccessMessage = "SuccessMessage";
 
     private readonly IDepartmentService _departmentService;
 
@@ -44,9 +47,28 @@ public class DepartmentController : Controller
         var viewModel = new DepartmentIndexViewModel
         {
             Name = name,
-            Departments = departments.Select(ToListItemViewModel).ToList()
+            Departments = departments.Select(ToListItemViewModel).ToList(),
+            ReturnUrl = GetCurrentUrl()
         };
 
+        return View(viewModel);
+    }
+
+    /// <summary>
+    /// 部門詳細画面を表示する
+    /// </summary>
+    [HttpGet]
+    public IActionResult Details(int id, string? returnUrl)
+    {
+        if (!IsLoggedIn())
+        {
+            return RedirectToAction("Index", "Login");
+        }
+
+        var department = _departmentService.GetDepartmentById(id);
+        var viewModel = ToDetailViewModel(department);
+        viewModel.ReturnUrl = NormalizeReturnUrl(returnUrl);
+        viewModel.CurrentUrl = GetCurrentUrl();
         return View(viewModel);
     }
 
@@ -54,14 +76,17 @@ public class DepartmentController : Controller
     /// 部門登録画面を表示する
     /// </summary>
     [HttpGet]
-    public IActionResult Create()
+    public IActionResult Create(string? returnUrl)
     {
         if (!IsLoggedIn())
         {
             return RedirectToAction("Index", "Login");
         }
 
-        return View(new DepartmentFormViewModel());
+        return View(new DepartmentFormViewModel
+        {
+            ReturnUrl = NormalizeReturnUrl(returnUrl)
+        });
     }
 
     /// <summary>
@@ -79,6 +104,7 @@ public class DepartmentController : Controller
 
         if (!ModelState.IsValid)
         {
+            form.ReturnUrl = NormalizeReturnUrl(form.ReturnUrl);
             return View(form);
         }
 
@@ -89,11 +115,13 @@ public class DepartmentController : Controller
                 Name = form.Name,
                 CreatedByUserId = loginUserId.Value
             });
-            return RedirectToAction(nameof(Index));
+            TempData[TempDataSuccessMessage] = $"部門「{form.Name.Trim()}」を登録しました。";
+            return RedirectToReturnUrlOrIndex(form.ReturnUrl);
         }
         catch (Exception e)
         {
             ModelState.AddModelError(string.Empty, e.Message);
+            form.ReturnUrl = NormalizeReturnUrl(form.ReturnUrl);
             return View(form);
         }
     }
@@ -102,7 +130,7 @@ public class DepartmentController : Controller
     /// 部門更新画面を表示する
     /// </summary>
     [HttpGet]
-    public IActionResult Edit(int id)
+    public IActionResult Edit(int id, string? returnUrl, string? deleteReturnUrl)
     {
         if (!IsLoggedIn())
         {
@@ -110,7 +138,13 @@ public class DepartmentController : Controller
         }
 
         var department = _departmentService.GetDepartmentById(id);
-        return View(ToFormViewModel(department));
+        var viewModel = ToFormViewModel(department);
+        viewModel.ReturnUrl = NormalizeReturnUrl(returnUrl);
+        viewModel.DeleteReturnUrl = NormalizeDeleteReturnUrl(
+            deleteReturnUrl,
+            returnUrl,
+            Url.Action(nameof(Details), new { id }));
+        return View(viewModel);
     }
 
     /// <summary>
@@ -128,6 +162,7 @@ public class DepartmentController : Controller
 
         if (!ModelState.IsValid)
         {
+            NormalizeEditReturnUrls(form);
             return View(form);
         }
 
@@ -139,7 +174,8 @@ public class DepartmentController : Controller
                 Name = form.Name,
                 UpdatedByUserId = loginUserId.Value
             });
-            return RedirectToAction(nameof(Index));
+            TempData[TempDataSuccessMessage] = $"部門「{form.Name.Trim()}」を更新しました。";
+            return RedirectToReturnUrlOrIndex(form.ReturnUrl);
         }
         catch (Exception e)
         {
@@ -149,6 +185,7 @@ public class DepartmentController : Controller
             form.CreatedAtText = FormatDateTime(department.CreatedAt);
             form.UpdatedByName = GetUserName(department.UpdatedByUser);
             form.UpdatedAtText = FormatDateTime(department.UpdatedAt);
+            NormalizeEditReturnUrls(form);
             return View(form);
         }
     }
@@ -157,7 +194,7 @@ public class DepartmentController : Controller
     /// 部門削除確認画面を表示する
     /// </summary>
     [HttpGet]
-    public IActionResult Delete(int id)
+    public IActionResult Delete(int id, string? returnUrl, string? cancelUrl)
     {
         if (!IsLoggedIn())
         {
@@ -165,7 +202,10 @@ public class DepartmentController : Controller
         }
 
         var department = _departmentService.GetDepartmentById(id);
-        return View(ToDeleteViewModel(department));
+        var viewModel = ToDeleteViewModel(department);
+        viewModel.ReturnUrl = NormalizeReturnUrl(returnUrl);
+        viewModel.CancelUrl = NormalizeReturnUrl(cancelUrl) ?? viewModel.ReturnUrl;
+        return View(viewModel);
     }
 
     /// <summary>
@@ -173,7 +213,7 @@ public class DepartmentController : Controller
     /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult DeleteConfirmed(int id)
+    public IActionResult DeleteConfirmed(int id, string? returnUrl, string? cancelUrl)
     {
         if (!IsLoggedIn())
         {
@@ -182,14 +222,18 @@ public class DepartmentController : Controller
 
         try
         {
+            var department = _departmentService.GetDepartmentById(id);
             _departmentService.Delete(id);
-            return RedirectToAction(nameof(Index));
+            TempData[TempDataSuccessMessage] = $"部門「{department.Name}」を削除しました。";
+            return RedirectToReturnUrlOrIndex(returnUrl);
         }
         catch (Exception e)
         {
             var department = _departmentService.GetDepartmentById(id);
             var viewModel = ToDeleteViewModel(department);
             viewModel.ErrorMessage = e.Message;
+            viewModel.ReturnUrl = NormalizeReturnUrl(returnUrl);
+            viewModel.CancelUrl = NormalizeReturnUrl(cancelUrl) ?? viewModel.ReturnUrl;
             return View("Delete", viewModel);
         }
     }
@@ -201,7 +245,57 @@ public class DepartmentController : Controller
 
     private int? GetLoginUserId()
     {
-        return HttpContext.Session.GetInt32(SessionLoginUserId);
+        return HttpContext.Session.GetInt32(SessionKeys.UserId);
+    }
+
+    private string GetCurrentUrl()
+    {
+        return $"{Request.Path}{Request.QueryString}";
+    }
+
+    private string? NormalizeReturnUrl(string? returnUrl)
+    {
+        return !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+            ? returnUrl
+            : null;
+    }
+
+    private string? NormalizeDeleteReturnUrl(
+        string? deleteReturnUrl,
+        string? returnUrl,
+        string? detailUrl)
+    {
+        var normalizedDeleteReturnUrl = NormalizeReturnUrl(deleteReturnUrl);
+        if (normalizedDeleteReturnUrl != null)
+        {
+            return normalizedDeleteReturnUrl;
+        }
+
+        var normalizedReturnUrl = NormalizeReturnUrl(returnUrl);
+        return IsSameLocalPath(normalizedReturnUrl, detailUrl) ? null : normalizedReturnUrl;
+    }
+
+    private static bool IsSameLocalPath(string? url, string? targetUrl)
+    {
+        if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(targetUrl))
+        {
+            return false;
+        }
+
+        var queryStart = url.IndexOf('?');
+        var path = queryStart >= 0 ? url[..queryStart] : url;
+        return string.Equals(
+            path.TrimEnd('/'),
+            targetUrl.TrimEnd('/'),
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private IActionResult RedirectToReturnUrlOrIndex(string? returnUrl)
+    {
+        var normalizedReturnUrl = NormalizeReturnUrl(returnUrl);
+        return normalizedReturnUrl == null
+            ? RedirectToAction(nameof(Index))
+            : LocalRedirect(normalizedReturnUrl);
     }
 
     private static DepartmentListItemViewModel ToListItemViewModel(DepartmentEntity department)
@@ -229,6 +323,24 @@ public class DepartmentController : Controller
         };
     }
 
+    private static DepartmentDetailViewModel ToDetailViewModel(DepartmentEntity department)
+    {
+        return new DepartmentDetailViewModel
+        {
+            Id = department.Id,
+            Name = department.Name,
+            EmployeeCount = department.Employees.Count,
+            CreatedByName = GetUserName(department.CreatedByUser),
+            CreatedAtText = FormatDateTime(department.CreatedAt),
+            UpdatedByName = GetUserName(department.UpdatedByUser),
+            UpdatedAtText = FormatDateTime(department.UpdatedAt),
+            Employees = department.Employees
+                .OrderBy(e => e.EmployeeNo)
+                .Select(ToDepartmentEmployeeListItemViewModel)
+                .ToList()
+        };
+    }
+
     private static DepartmentDeleteViewModel ToDeleteViewModel(DepartmentEntity department)
     {
         return new DepartmentDeleteViewModel
@@ -241,9 +353,31 @@ public class DepartmentController : Controller
         };
     }
 
+    private static DepartmentEmployeeListItemViewModel ToDepartmentEmployeeListItemViewModel(
+        EmployeeEntity employee)
+    {
+        return new DepartmentEmployeeListItemViewModel
+        {
+            Id = employee.Id,
+            EmployeeNo = employee.EmployeeNo,
+            Name = employee.Name,
+            Email = employee.Email ?? string.Empty,
+            HireDateText = FormatDate(employee.HireDate)
+        };
+    }
+
     private static string GetUserName(LoginUserEntity? loginUser)
     {
         return loginUser?.Employee?.Name ?? string.Empty;
+    }
+
+    private void NormalizeEditReturnUrls(DepartmentFormViewModel form)
+    {
+        form.DeleteReturnUrl = NormalizeDeleteReturnUrl(
+            form.DeleteReturnUrl,
+            form.ReturnUrl,
+            Url.Action(nameof(Details), new { id = form.Id }));
+        form.ReturnUrl = NormalizeReturnUrl(form.ReturnUrl);
     }
 
     private static string FormatDate(DateTime? dateTime)
