@@ -39,7 +39,7 @@ public sealed class EmployeeServiceLoginUserTests
     public void SaveLoginUser_ShouldCreateLoginUser_WhenEmployeeBelongsToHumanResources()
     {
         // Arrange
-        var employee = AddEmployee(2, "E0002", "佐藤健", 1);
+        var employee = AddEmployee(2, "1002", "鈴木花子", 1);
 
         // Act
         _service.SaveLoginUser(employee.Id, "1002", "pass2");
@@ -56,7 +56,7 @@ public sealed class EmployeeServiceLoginUserTests
     public void SaveLoginUser_ShouldKeepCurrentPassword_WhenPasswordIsBlank()
     {
         // Arrange
-        var employee = AddEmployee(2, "E0002", "佐藤健", 1);
+        var employee = AddEmployee(2, "1002", "鈴木花子", 1);
         _loginUsers.LoginUsers.Add(new LoginUserEntity
         {
             Id = 2,
@@ -80,7 +80,7 @@ public sealed class EmployeeServiceLoginUserTests
     public void SaveLoginUser_ShouldThrowException_WhenEmployeeDoesNotBelongToHumanResources()
     {
         // Arrange
-        var employee = AddEmployee(2, "E0002", "佐藤健", 2);
+        var employee = AddEmployee(2, "1002", "鈴木花子", 2);
 
         // Act
         var exception = Assert.ThrowsExactly<InvalidOperationException>(() =>
@@ -95,7 +95,7 @@ public sealed class EmployeeServiceLoginUserTests
     public void DeleteLoginUser_ShouldThrowException_WhenLoginUserDoesNotExist()
     {
         // Arrange
-        var employee = AddEmployee(2, "E0002", "佐藤健", 1);
+        var employee = AddEmployee(2, "1002", "鈴木花子", 1);
 
         // Act
         var exception = Assert.ThrowsExactly<InvalidOperationException>(() =>

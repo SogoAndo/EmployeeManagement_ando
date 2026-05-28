@@ -38,7 +38,7 @@ internal static class TestDataFactory
     public static LoginUserEntity CreateLoginUser(int id, string loginId, string departmentName)
     {
         var department = CreateDepartment(id, departmentName);
-        var employee = CreateEmployee(id, $"E{id:0000}", $"社員{id}", $"employee{id}@example.com", department.Id);
+        var employee = CreateEmployee(id, $"{1000 + id}", $"社員{id}", $"employee{id}@example.com", department.Id);
         employee.Department = department;
 
         return new LoginUserEntity

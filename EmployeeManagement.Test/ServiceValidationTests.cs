@@ -72,7 +72,7 @@ public sealed class ServiceValidationTests
     {
         var departments = new FakeDepartmentRepository();
         var department = CreateDepartment(2, "営業部");
-        department.Employees.Add(CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", department.Id));
+        department.Employees.Add(CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", department.Id));
         departments.Departments.Add(department);
         var loginUsers = new FakeLoginUserRepository();
         var service = new DepartmentService(departments, loginUsers);
@@ -95,7 +95,7 @@ public sealed class ServiceValidationTests
         var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             service.Register(new EmployeeEntity
             {
-                EmployeeNo = "E9999",
+                EmployeeNo = "9999",
                 Name = "確認太郎",
                 Email = "mail",
                 HireDate = new DateTime(2026, 5, 25),
@@ -120,7 +120,7 @@ public sealed class ServiceValidationTests
 
         service.Register(new EmployeeEntity
         {
-            EmployeeNo = " E9999 ",
+            EmployeeNo = " 9999 ",
             Name = " 確認太郎 ",
             Email = "   ",
             HireDate = new DateTime(2026, 5, 25),
@@ -129,7 +129,7 @@ public sealed class ServiceValidationTests
         });
 
         Assert.HasCount(1, employees.Employees);
-        Assert.AreEqual("E9999", employees.Employees[0].EmployeeNo);
+        Assert.AreEqual("9999", employees.Employees[0].EmployeeNo);
         Assert.AreEqual("確認太郎", employees.Employees[0].Name);
         Assert.IsNull(employees.Employees[0].Email);
     }
@@ -146,7 +146,7 @@ public sealed class ServiceValidationTests
 
         service.Register(new EmployeeEntity
         {
-            EmployeeNo = "E9999",
+            EmployeeNo = "9999",
             Name = "確認太郎",
             Email = "kakunin@example.com",
             HireDate = new DateTime(2026, 5, 25),
@@ -176,7 +176,7 @@ public sealed class ServiceValidationTests
         var exception = Assert.ThrowsExactly<InvalidOperationException>(() =>
             service.Register(new EmployeeEntity
             {
-                EmployeeNo = "E9999",
+                EmployeeNo = "9999",
                 Name = "確認太郎",
                 Email = "kakunin@example.com",
                 HireDate = new DateTime(2026, 5, 25),
@@ -201,7 +201,7 @@ public sealed class ServiceValidationTests
         var exception = Assert.ThrowsExactly<ArgumentException>(() =>
             service.Register(new EmployeeEntity
             {
-                EmployeeNo = "E9999",
+                EmployeeNo = "9999",
                 Name = "確認太郎",
                 Email = "kakunin@example.com",
                 HireDate = new DateTime(2026, 5, 25),
@@ -219,7 +219,7 @@ public sealed class ServiceValidationTests
         var employees = new FakeEmployeeRepository();
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(CreateLoginUser(1, "1001", "人事部"));
@@ -236,9 +236,9 @@ public sealed class ServiceValidationTests
         service.Update(new EmployeeEntity
         {
             Id = targetEmployee.Id,
-            EmployeeNo = "E0002",
-            Name = "佐藤健",
-            Email = "sato@example.com",
+            EmployeeNo = "1002",
+            Name = "鈴木花子",
+            Email = "suzuki.hanako@example.com",
             HireDate = new DateTime(2026, 5, 25),
             DepartmentId = 1,
             UpdatedByUserId = 1
@@ -254,7 +254,7 @@ public sealed class ServiceValidationTests
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
         departments.Departments.Add(CreateDepartment(2, "営業部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(CreateLoginUser(1, "1001", "人事部"));
@@ -271,9 +271,9 @@ public sealed class ServiceValidationTests
         service.Update(new EmployeeEntity
         {
             Id = targetEmployee.Id,
-            EmployeeNo = "E0002",
-            Name = "佐藤健",
-            Email = "sato@example.com",
+            EmployeeNo = "1002",
+            Name = "鈴木花子",
+            Email = "suzuki.hanako@example.com",
             HireDate = new DateTime(2026, 5, 25),
             DepartmentId = 2,
             UpdatedByUserId = 1
@@ -289,7 +289,7 @@ public sealed class ServiceValidationTests
         var employees = new FakeEmployeeRepository();
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(CreateLoginUser(1, "1001", "人事部"));
@@ -309,7 +309,7 @@ public sealed class ServiceValidationTests
         var employees = new FakeEmployeeRepository();
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(CreateLoginUser(1, "1001", "人事部"));
@@ -337,7 +337,7 @@ public sealed class ServiceValidationTests
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
         departments.Departments.Add(CreateDepartment(2, "営業部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 2);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 2);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(CreateLoginUser(1, "1001", "人事部"));
@@ -356,7 +356,7 @@ public sealed class ServiceValidationTests
         var employees = new FakeEmployeeRepository();
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(CreateLoginUser(1, "1001", "人事部"));
@@ -373,7 +373,7 @@ public sealed class ServiceValidationTests
         var employees = new FakeEmployeeRepository();
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(new LoginUserEntity
@@ -397,7 +397,7 @@ public sealed class ServiceValidationTests
         var employees = new FakeEmployeeRepository();
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         loginUsers.LoginUsers.Add(new LoginUserEntity
@@ -421,7 +421,7 @@ public sealed class ServiceValidationTests
         var employees = new FakeEmployeeRepository();
         var departments = new FakeDepartmentRepository();
         departments.Departments.Add(CreateDepartment(1, "人事部"));
-        var targetEmployee = CreateEmployee(2, "E0002", "佐藤健", "sato@example.com", 1);
+        var targetEmployee = CreateEmployee(2, "1002", "鈴木花子", "suzuki.hanako@example.com", 1);
         employees.Employees.Add(targetEmployee);
         var loginUsers = new FakeLoginUserRepository();
         var service = CreateEmployeeService(employees, departments, loginUsers);
@@ -477,7 +477,7 @@ public sealed class ServiceValidationTests
     {
         var form = new EmployeeFormViewModel
         {
-            EmployeeNo = "E9999",
+            EmployeeNo = "9999",
             Name = "確認太郎",
             Email = "mail",
             HireDate = new DateTime(2026, 5, 25),
@@ -558,7 +558,7 @@ public sealed class ServiceValidationTests
     private static LoginUserEntity CreateLoginUser(int id, string loginId, string departmentName)
     {
         var department = CreateDepartment(id, departmentName);
-        var employee = CreateEmployee(id, $"E{id:0000}", $"社員{id}", $"employee{id}@example.com", department.Id);
+        var employee = CreateEmployee(id, $"{1000 + id}", $"社員{id}", $"employee{id}@example.com", department.Id);
         employee.Department = department;
 
         return new LoginUserEntity
